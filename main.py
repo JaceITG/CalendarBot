@@ -1,6 +1,8 @@
 import json
 import scheduler
 
+import utils
+
 import interactions
 import interactions.api.models as models
 
@@ -25,27 +27,47 @@ async def ping(ctx: interactions.CommandContext):
         description="Create a new event object in the calendar.",
         options = [
             interactions.Option(
+                name = "name",
+                description = "Name of the event",
+                type = interactions.OptionType.STRING,
+                required = True,
+            ),
+            interactions.Option(
                 name = "startdate",
-                description = "Datetime when the event begins.",
+                description = "Datetime when the event begins",
                 type = interactions.OptionType.STRING,
                 required = True,
             ),
         ],
         scope=545410383339323403,
 )
-async def newevent(ctx: interactions.CommandContext, startdate: str):
-    event_embed = await scheduler.request()
+async def newevent(ctx: interactions.CommandContext, name: str, startdate: str):
+    try:
+        dt = await utils.parse_time(startdate)
+    except Exception as e:
+        await ctx.send(embeds=utils.err_embed(f"Invalid time format: {startdate}"))
+        return
+    
+    event_embed = await scheduler.request('create', [name, dt])
+    await ctx.send(embeds=event_embed)
+
+@bot.command(
+        name="findevent",
+        description="Find an existing event object in the calendar.",
+        options = [
+            interactions.Option(
+                name = "id",
+                description = "ID of the event",
+                type = interactions.OptionType.STRING,
+                required = False,
+            ),
+        ],
+        scope=545410383339323403,
+)
+async def findevent(ctx: interactions.CommandContext, id: str = None):
+    event_embed = await scheduler.request('read', [id])
     await ctx.send(embeds=event_embed)
 
 
-######## HELPER FUNCS ########
-
-async def _err_embed(msg, example=None):
-    emb = models.message.Embed(description=msg, color=models.misc.Color.dark_red())
-
-    if example:
-        emb.add_field(name='Example:', value=example)
-
-    return emb
-
-bot.start()
+def start():
+    bot.start()
