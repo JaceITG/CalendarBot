@@ -38,17 +38,24 @@ async def ping(ctx: interactions.CommandContext):
                 type = interactions.OptionType.STRING,
                 required = True,
             ),
+            interactions.Option(
+                name = "enddate",
+                description = "Datetime when the event ends. If none provided, event will run all day",
+                type = interactions.OptionType.STRING,
+                required = False,
+            ),
         ],
-        scope=545410383339323403,
+        scope=545410383339323403,   #TEMP: prevent needing to wait for /command to register with API
 )
-async def newevent(ctx: interactions.CommandContext, name: str, startdate: str):
+async def newevent(ctx: interactions.CommandContext, name: str, startdate: str, enddate: str = None):
     try:
-        dt = await utils.parse_time(startdate)
+        sdt = await utils.parse_time(startdate)
+        edt = await utils.parse_time(enddate) if enddate else None
     except Exception as e:
-        await ctx.send(embeds=utils.err_embed(f"Invalid time format: {startdate}"))
+        await ctx.send(embeds=await utils.err_embed(f"Invalid time format"))
         return
     
-    event_embed = await scheduler.request('create', [name, dt])
+    event_embed = await scheduler.request('create', [name, sdt, edt, ctx.author])
     await ctx.send(embeds=event_embed)
 
 @bot.command(
@@ -62,7 +69,7 @@ async def newevent(ctx: interactions.CommandContext, name: str, startdate: str):
                 required = False,
             ),
         ],
-        scope=545410383339323403,
+        scope=545410383339323403,   #TEMP: prevent needing to wait for /command to register with API
 )
 async def findevent(ctx: interactions.CommandContext, id: str = None):
     event_embed = await scheduler.request('read', [id])
