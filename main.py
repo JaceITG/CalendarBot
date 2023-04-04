@@ -23,7 +23,7 @@ async def ping(ctx: interactions.CommandContext):
     await ctx.send("pong")
 
 @bot.command(
-        name="newevent",
+        name="create",
         description="Create a new event object in the calendar.",
         options = [
             interactions.Option(
@@ -59,7 +59,7 @@ async def newevent(ctx: interactions.CommandContext, name: str, startdate: str, 
     await ctx.send(embeds=event_embed)
 
 @bot.command(
-        name="findevent",
+        name="find",
         description="Find an existing event object in the calendar.",
         options = [
             interactions.Option(
