@@ -51,6 +51,14 @@ async def _query(q: dict):
 
     return await utils.query_embed(cursor, q=q)
 
+async def _delete(q: dict):
+    deleted = db.events.delete_one(q)
+
+    if deleted.deleted_count < 1:
+        return utils.err_embed(f"Could not find event to delete matching query:\n`{q}`")
+    
+    return Embed(description=f"Event deleted successfully\nQuery: `{q}`")
+
 
 async def _get_user(id: int):
     user = db.users.find_one({'_id': id})
@@ -72,7 +80,7 @@ async def request(action, args: list = None, doc: dict = None):
     elif action == 'update':
         return None
     elif action == 'delete':
-        return None
+        return await _delete(doc)
     elif action == 'read_user':
         return await _get_user(*args)
     elif action == 'query':

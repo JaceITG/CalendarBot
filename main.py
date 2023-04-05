@@ -24,7 +24,7 @@ async def ping(ctx: interactions.CommandContext):
 
 @bot.command(
         name="create",
-        description="Create a new event object in the calendar.",
+        description="Create a new event object in the calendar",
         options = [
             interactions.Option(
                 name = "name",
@@ -60,7 +60,7 @@ async def newevent(ctx: interactions.CommandContext, name: str, start: str, end:
 
 @bot.command(
         name="get",
-        description="Get an existing event object in the calendar.",
+        description="Get an existing event object in the calendar",
         options = [
             interactions.Option(
                 name = "id",
@@ -96,6 +96,34 @@ async def findevent(ctx: interactions.CommandContext, id: str = None, name: str 
         embed = await scheduler.request('read', doc={"_id": id})
     elif name:
         embed = await scheduler.request('query', doc={"name": name})
+    await ctx.send(embeds=embed)
+
+@bot.command(
+        name="delete",
+        description="Delete an event from the calendar",
+        options = [
+            interactions.Option(
+                name = "id",
+                description = "ID of the event",
+                type = interactions.OptionType.STRING,
+                required = False,
+            ),
+            interactions.Option(
+                name = "name",
+                description = "Name of the event",
+                type = interactions.OptionType.STRING,
+                required = False,
+            ),
+        ]
+)
+async def deleteevent(ctx: interactions.CommandContext, id: str = None, name: str = None):
+    if id:
+        embed = await scheduler.request('delete', doc={'_id': id, 'author_id': int(ctx.author.id)})
+    elif name:
+        embed = await scheduler.request('delete', doc={'name': name, 'author_id': int(ctx.author.id)})
+    else:
+        embed = await utils.err_embed("Must provide an attribute of the event you want to delete")
+    
     await ctx.send(embeds=embed)
 
 
