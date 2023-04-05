@@ -33,13 +33,13 @@ async def ping(ctx: interactions.CommandContext):
                 required = True,
             ),
             interactions.Option(
-                name = "startdate",
+                name = "start",
                 description = "Datetime when the event begins",
                 type = interactions.OptionType.STRING,
                 required = True,
             ),
             interactions.Option(
-                name = "enddate",
+                name = "end",
                 description = "Datetime when the event ends. If none provided, event will run all day",
                 type = interactions.OptionType.STRING,
                 required = False,
@@ -47,10 +47,10 @@ async def ping(ctx: interactions.CommandContext):
         ],
         scope=545410383339323403,   #TEMP: prevent needing to wait for /command to register with API
 )
-async def newevent(ctx: interactions.CommandContext, name: str, startdate: str, enddate: str = None):
+async def newevent(ctx: interactions.CommandContext, name: str, start: str, end: str = None):
     try:
-        sdt = await utils.parse_time(startdate)
-        edt = await utils.parse_time(enddate) if enddate else None
+        sdt = await utils.parse_time(start)
+        edt = await utils.parse_time(end) if end else None
     except Exception as e:
         await ctx.send(embeds=await utils.err_embed(f"Invalid time format"))
         return
@@ -59,8 +59,8 @@ async def newevent(ctx: interactions.CommandContext, name: str, startdate: str, 
     await ctx.send(embeds=event_embed)
 
 @bot.command(
-        name="find",
-        description="Find an existing event object in the calendar.",
+        name="get",
+        description="Get an existing event object in the calendar.",
         options = [
             interactions.Option(
                 name = "id",
@@ -68,12 +68,35 @@ async def newevent(ctx: interactions.CommandContext, name: str, startdate: str, 
                 type = interactions.OptionType.STRING,
                 required = False,
             ),
+            interactions.Option(
+                name = "name",
+                description = "Name of the event",
+                type = interactions.OptionType.STRING,
+                required = False,
+            ),
+            interactions.Option(
+                name = "creator",
+                description = "Events created by user (name or ID)",
+                type = interactions.OptionType.STRING,
+                required = False,
+            ),
         ],
         scope=545410383339323403,   #TEMP: prevent needing to wait for /command to register with API
 )
-async def findevent(ctx: interactions.CommandContext, id: str = None):
-    event_embed = await scheduler.request('read', [id])
-    await ctx.send(embeds=event_embed)
+async def findevent(ctx: interactions.CommandContext, id: str = None, name: str = None, creator: str = None):
+    if creator:
+        res = await ctx.guild.search_members(creator)
+        if len(res)<1:
+            return await ctx.send(embeds=utils.err_embed(f"Could not find user {creator}"))
+        
+        creator_id = int(res[0].user.id)
+
+        embed = await scheduler.request('query', doc={'author_id': creator_id})
+    elif id:
+        embed = await scheduler.request('read', doc={"_id": id})
+    elif name:
+        embed = await scheduler.request('query', doc={"name": name})
+    await ctx.send(embeds=embed)
 
 
 def start():

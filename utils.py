@@ -10,7 +10,7 @@ async def parse_time(time):
     
     return parse(time)
 
-async def event_embed(event:dict, creator: dict, action:str = None):
+async def event_embed(event:dict, action:str = None):
     colors = {
         'New Event Created': models.misc.Color.GREEN,
         'Existing Event': models.misc.Color.WHITE,
@@ -33,9 +33,24 @@ async def event_embed(event:dict, creator: dict, action:str = None):
         #All day event
         emb.add_field(name="End Time", value="All day")
 
-    emb.add_field(name="Creator", value=f"{creator['name']} (ID: {creator['_id']})")
+    emb.add_field(name="Creator", value=f"{event['author_name']} (ID: {event['author_id']})")
     
     emb.set_footer(f"Event ID {event['_id']}")
+    return emb
+
+async def query_embed(cursor, q:dict = None):
+    emb = models.Embed(title="Results", description=f"Query: `{str(q)}`", color=models.misc.Color.WHITE)
+    
+    for e in cursor:
+        time_str = e['time'].strftime('%#m/%d/%Y %#I:%M%p')
+        if e['end']:
+            time_str += " -\n" + e['end'].strftime('%#m/%d/%Y %#I:%M%p')
+
+        emb.add_field(name=e['name'], value=f"{time_str}", inline=True)
+        emb.add_field(name=" ", value=f"👤 {e['author_name']}", inline=True)
+
+        emb.add_field(name=" ",value=" ", inline=False)
+    
     return emb
 
 async def err_embed(msg, example=None):

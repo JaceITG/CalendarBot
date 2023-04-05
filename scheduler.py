@@ -18,18 +18,22 @@ async def _create(name: str, sdt: datetime, edt: datetime, author: User):
         "name": name,
         "time": sdt,
         "end": edt,
-        "author_id": user['_id']
+        "author_id": user['_id'],
+        "author_name": user['name']
     }
     event_id = db.events.insert_one(event).inserted_id
     event = db.events.find_one({"_id": event_id})
 
-    creator = await _get_user(event['author_id'])
-    return await utils.event_embed(event, creator, "New Event Created")
+    return await utils.event_embed(event, "New Event Created")
 
-async def _read(id: str = None):
-    if id:
+async def _read_one(q: dict = None):
+    if q:
+        #convert id queries
+        if "_id" in q.keys():
+            q["_id"] = ObjectId(q["_id"])
+
         #Get indexed event
-        event = db.events.find_one({"_id": ObjectId(id)})
+        event = db.events.find_one(q)
     else:
         #Get a random event
         event = db.events.find_one()
@@ -39,6 +43,14 @@ async def _read(id: str = None):
     
     creator = await _get_user(event['author_id'])
     return await utils.event_embed(event, creator, "Existing Event")
+
+async def _query(q: dict):
+    cursor = db.events.find(q)
+    if not cursor:
+        return await utils.err_embed("Could not find events")
+
+    return await utils.query_embed(cursor, q=q)
+
 
 async def _get_user(id: int):
     user = db.users.find_one({'_id': id})
@@ -52,15 +64,17 @@ async def _create_user(discord_user: User):
     user_id = db.users.insert_one(user)
     return db.users.find_one({'_id':user_id})
 
-async def request(action, args: list = None):
+async def request(action, args: list = None, doc: dict = None):
     if action == 'create':
         return await _create(*args)
     elif action == 'read':
-        return await _read(*args)
+        return await _read_one(doc)
     elif action == 'update':
         return None
     elif action == 'delete':
         return None
     elif action == 'read_user':
         return await _get_user(*args)
+    elif action == 'query':
+        return await _query(doc)
     
