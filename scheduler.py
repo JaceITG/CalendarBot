@@ -52,6 +52,9 @@ async def _query(q: dict):
     return await utils.query_embed(cursor, q=q)
 
 async def _delete(q: dict):
+    if "_id" in q.keys():
+        q["_id"] = ObjectId(q["_id"])
+        
     deleted = db.events.delete_one(q)
 
     if deleted.deleted_count < 1:
