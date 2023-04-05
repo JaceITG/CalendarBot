@@ -23,7 +23,7 @@ async def event_embed(event:dict, action:str = None):
     
     if event['end']:
         #Construct duration string
-        td = event['time'] - event['end']
+        td = event['end'] - event['time']
         duration = f"{td.days} days " if td.days > 0 else ""
         duration += f"{td.seconds//3600} hr " if td.seconds//3600 > 0 else ""
         duration += f"{(td.seconds//60)%60} min " if (td.seconds//60)%60 > 0 else ""
