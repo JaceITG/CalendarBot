@@ -46,7 +46,7 @@ async def query_embed(cursor, q:dict = None):
         if e['end']:
             time_str += " -\n" + e['end'].strftime('%#m/%d/%Y %#I:%M%p')
 
-        emb.add_field(name=e['name'], value=f"{time_str}", inline=True)
+        emb.add_field(name=e['name'], value=f"{time_str}\nID: {e['_id']}", inline=True)
         emb.add_field(name=" ", value=f"👤 {e['author_name']}", inline=True)
 
         emb.add_field(name=" ",value=" ", inline=False)

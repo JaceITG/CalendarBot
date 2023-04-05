@@ -11,10 +11,6 @@ with open('.secret', 'r') as f:
 
 bot = interactions.Client(token=token)
 
-@bot.event()
-async def on_start():
-    print("Bot started")
-
 @bot.command(
         name="ping",
         description="test",
@@ -87,7 +83,8 @@ async def findevent(ctx: interactions.CommandContext, id: str = None, name: str 
     if creator:
         res = await ctx.guild.search_members(creator)
         if len(res)<1:
-            return await ctx.send(embeds=utils.err_embed(f"Could not find user {creator}"))
+            err = await utils.err_embed(f"Could not find user {creator}")
+            return await ctx.send(embeds=err)
         
         creator_id = int(res[0].user.id)
 
@@ -126,6 +123,9 @@ async def deleteevent(ctx: interactions.CommandContext, id: str = None, name: st
     
     await ctx.send(embeds=embed)
 
+@bot.event()
+async def on_start():
+    print("Bot started")
 
 def start():
     bot.start()

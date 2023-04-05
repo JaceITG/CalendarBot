@@ -55,7 +55,7 @@ async def _delete(q: dict):
     deleted = db.events.delete_one(q)
 
     if deleted.deleted_count < 1:
-        return utils.err_embed(f"Could not find event to delete matching query:\n`{q}`")
+        return await utils.err_embed(f"Could not find event to delete matching query:\n`{q}`")
     
     return Embed(description=f"Event deleted successfully\nQuery: `{q}`")
 
