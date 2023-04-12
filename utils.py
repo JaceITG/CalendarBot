@@ -19,11 +19,11 @@ async def event_embed(event:dict, action:str = None):
     emb = models.Embed(title=action, color=colors[action])
 
     emb.add_field(name="Event", value=event['name'])
-    emb.add_field(name="Start Time", value=event['time'].strftime('%#m/%d/%Y %#I:%M%p'))
+    emb.add_field(name="Start Time", value=event['start'].strftime('%#m/%d/%Y %#I:%M%p'))
     
     if event['end']:
         #Construct duration string
-        td = event['end'] - event['time']
+        td = event['end'] - event['start']
         duration = f"{td.days} days " if td.days > 0 else ""
         duration += f"{td.seconds//3600} hr " if td.seconds//3600 > 0 else ""
         duration += f"{(td.seconds//60)%60} min " if (td.seconds//60)%60 > 0 else ""
@@ -47,7 +47,7 @@ async def query_embed(cursor, q:dict = None):
             num_events += 1
             continue
 
-        time_str = e['time'].strftime('%#m/%d/%Y %#I:%M%p')
+        time_str = e['start'].strftime('%#m/%d/%Y %#I:%M%p')
         if e['end']:
             time_str += " -\n" + e['end'].strftime('%#m/%d/%Y %#I:%M%p')
 
@@ -61,6 +61,53 @@ async def query_embed(cursor, q:dict = None):
     emb.set_footer(f"Showing {5 if num_events>=5 else num_events} of {num_events} events. {'Refine search query to see more results' if num_events>=5 else ''}")
     
     return emb
+
+async def strtoqry(q):
+    doc = {}
+
+    terms = [t.strip() for t in q.split(',')]
+
+    operators = {
+        'before':'lt',
+        'after':'gt',
+        '>=':'gte',
+        '<=':'lte',
+        '==':'eq',
+        '!=':'ne',
+        '<':'lt',
+        '>':'gt',
+        '=':'eq'
+    }
+
+    fields = ["name", "start", "end", "author_id", "author_name"]
+
+    for t in terms:
+        for o in operators.keys():
+            if o in t:
+                tokens = [token.strip() for token in t.split(o)]
+
+                if len(tokens) != 2:
+                    return await err_embed(f"Malformed operator expression: {t}")
+                
+                if tokens[0] in fields:
+                    prop = tokens[0]
+                    value = tokens[1]
+                elif tokens[1] in fields:
+                    prop = tokens[1]
+                    value = tokens[0]
+                else:
+                    return await err_embed(f"Invalid query property in {' '.join(tokens)}")
+                
+                if prop in ["start", "end"]:
+                    #parse value as datetime
+                    try:
+                        value = await parse_time(value)
+                    except Exception as e:
+                        return await err_embed(f"Invalid time format")
+
+                doc[prop] = {f"${operators[o]}": value}
+                break
+    return doc
 
 async def err_embed(msg, example=None):
     emb = models.message.Embed(description=msg, color=models.misc.Color.RED)

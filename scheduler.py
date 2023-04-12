@@ -16,10 +16,11 @@ async def _create(name: str, sdt: datetime, edt: datetime, author: User):
     
     event = {
         "name": name,
-        "time": sdt,
+        "start": sdt,
         "end": edt,
         "author_id": user['_id'],
-        "author_name": user['name']
+        "author_name": user['name'],
+        "created": datetime.now()
     }
     event_id = db.events.insert_one(event).inserted_id
     event = db.events.find_one({"_id": event_id})

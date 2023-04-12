@@ -76,10 +76,16 @@ async def newevent(ctx: interactions.CommandContext, name: str, start: str, end:
                 type = interactions.OptionType.STRING,
                 required = False,
             ),
+            interactions.Option(
+                name = "query",
+                description = "Comma-separated query on an event's properties",
+                type = interactions.OptionType.STRING,
+                required = False,
+            ),
         ],
         scope=545410383339323403,   #TEMP: prevent needing to wait for /command to register with API
 )
-async def findevent(ctx: interactions.CommandContext, id: str = None, name: str = None, creator: str = None):
+async def findevent(ctx: interactions.CommandContext, id: str = None, name: str = None, creator: str = None, query: str = None):
     if creator:
         res = await ctx.guild.search_members(creator)
         if len(res)<1:
@@ -93,6 +99,9 @@ async def findevent(ctx: interactions.CommandContext, id: str = None, name: str 
         embed = await scheduler.request('read', doc={"_id": id})
     elif name:
         embed = await scheduler.request('query', doc={"name": name})
+    elif query:
+        doc = await utils.strtoqry(query)
+        embed = await scheduler.request('query', doc = doc)
     else:
         embed = await scheduler.request('query', doc={})
     await ctx.send(embeds=embed)
