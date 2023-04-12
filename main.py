@@ -93,6 +93,8 @@ async def findevent(ctx: interactions.CommandContext, id: str = None, name: str 
         embed = await scheduler.request('read', doc={"_id": id})
     elif name:
         embed = await scheduler.request('query', doc={"name": name})
+    else:
+        embed = await scheduler.request('query', doc={})
     await ctx.send(embeds=embed)
 
 @bot.command(

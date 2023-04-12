@@ -41,7 +41,12 @@ async def event_embed(event:dict, action:str = None):
 async def query_embed(cursor, q:dict = None):
     emb = models.Embed(title="Results", description=f"Query: `{str(q)}`", color=models.misc.Color.WHITE)
     
+    num_events = 0
     for e in cursor:
+        if num_events >= 5:
+            num_events += 1
+            continue
+
         time_str = e['time'].strftime('%#m/%d/%Y %#I:%M%p')
         if e['end']:
             time_str += " -\n" + e['end'].strftime('%#m/%d/%Y %#I:%M%p')
@@ -50,6 +55,10 @@ async def query_embed(cursor, q:dict = None):
         emb.add_field(name=" ", value=f"👤 {e['author_name']}", inline=True)
 
         emb.add_field(name=" ",value=" ", inline=False)
+
+        num_events += 1
+    
+    emb.set_footer(f"Showing {5 if num_events>=5 else num_events} of {num_events} events. {'Refine search query to see more results' if num_events>=5 else ''}")
     
     return emb
 
