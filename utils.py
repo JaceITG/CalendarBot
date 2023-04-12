@@ -68,8 +68,9 @@ async def strtoqry(q):
     terms = [t.strip() for t in q.split(',')]
 
     operators = {
-        'before':'lt',
-        'after':'gt',
+        ' before ':'lt',
+        ' after ':'gt',
+        ' in ':'regex',
         '>=':'gte',
         '<=':'lte',
         '==':'eq',
@@ -79,7 +80,7 @@ async def strtoqry(q):
         '=':'eq'
     }
 
-    fields = ["name", "start", "end", "author_id", "author_name"]
+    fields = ["name", "start", "end", "author_id", "author_name", "created"]
 
     for t in terms:
         for o in operators.keys():
@@ -98,7 +99,7 @@ async def strtoqry(q):
                 else:
                     return await err_embed(f"Invalid query property in {' '.join(tokens)}")
                 
-                if prop in ["start", "end"]:
+                if prop in ["start", "end", "created"]:
                     #parse value as datetime
                     try:
                         value = await parse_time(value)
@@ -106,6 +107,11 @@ async def strtoqry(q):
                         return await err_embed(f"Invalid time format")
 
                 doc[prop] = {f"${operators[o]}": value}
+
+                if operators[o] == "regex":
+                    #add case-insensitivity
+                    doc[prop]['$options'] = 'i'
+                
                 break
     return doc
 
