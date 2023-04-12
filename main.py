@@ -41,7 +41,7 @@ async def ping(ctx: interactions.CommandContext):
                 required = False,
             ),
         ],
-        scope=545410383339323403,   #TEMP: prevent needing to wait for /command to register with API
+        scope=680111789647855660,   #TEMP: prevent needing to wait for /command to register with API
 )
 async def newevent(ctx: interactions.CommandContext, name: str, start: str, end: str = None):
     try:
@@ -83,7 +83,7 @@ async def newevent(ctx: interactions.CommandContext, name: str, start: str, end:
                 required = False,
             ),
         ],
-        scope=545410383339323403,   #TEMP: prevent needing to wait for /command to register with API
+        scope=680111789647855660,   #TEMP: prevent needing to wait for /command to register with API
 )
 async def findevent(ctx: interactions.CommandContext, id: str = None, name: str = None, creator: str = None, query: str = None):
     if creator:
@@ -122,7 +122,8 @@ async def findevent(ctx: interactions.CommandContext, id: str = None, name: str 
                 type = interactions.OptionType.STRING,
                 required = False,
             ),
-        ]
+        ],
+        scope=680111789647855660,
 )
 async def deleteevent(ctx: interactions.CommandContext, id: str = None, name: str = None):
     if id:

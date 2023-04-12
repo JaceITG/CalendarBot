@@ -73,7 +73,7 @@ async def _create_user(discord_user: User):
         "_id": int(discord_user.id),
         "name": discord_user.username
     }
-    user_id = db.users.insert_one(user)
+    user_id = db.users.insert_one(user).inserted_id
     return db.users.find_one({'_id':user_id})
 
 async def request(action, args: list = None, doc: dict = None):
