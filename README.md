@@ -22,6 +22,8 @@ Start and end time arguments for the event are parsed from natural language, all
 
 ![Different time formats](https://i.imgur.com/GDLVVEf.png)
 
+Here is what the database looks like with a 
+
 ### Reading events from the database
 
 Existing event objects can be queried using the `/get` slash command. Events can be referenced by keyword arguments `name`, `id`, or `creator`. Additionally, the `query` argument can be used to filter the database using one or more expressions with the available event properties.
@@ -47,14 +49,21 @@ If we want to delete the event listing for "Homework", we can index it by the ID
 
 ![Delete Homework](https://i.imgur.com/JjfuOhI.png)
 
+Now if we search the database for the "Homework" event, we see that it no longer exists.
+
+![No results](https://i.imgur.com/w7fL2eo.png)
+
 ### Common errors
 
 Errors in user input may commonly arise when attempting to interface with the database. For this reason, exceptions are caught and the [error embed utility](utils.py) returns a readable notice of the error to the user.
 
 Some normal input errors include:
 
-- Invalid time formats ![Invalid time format](https://i.imgur.com/9x90eNO.png)
+- Invalid time formats
+![Invalid time format](https://i.imgur.com/9x90eNO.png)
 
-- Malformed or invalid query expressions ![Invalid query property](https://i.imgur.com/f92MuiK.png) ![Malformed expression](https://i.imgur.com/byS5Wza.png)
+- Malformed or invalid query expressions
+![Invalid query property](https://i.imgur.com/f92MuiK.png) ![Malformed expression](https://i.imgur.com/byS5Wza.png)
 
-- Failure to find/delete an event ![Missing event](https://i.imgur.com/QBatu93.png)
+- Failure to find/delete an event
+![Missing event](https://i.imgur.com/QBatu93.png)
