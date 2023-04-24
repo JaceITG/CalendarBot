@@ -60,10 +60,15 @@ Errors in user input may commonly arise when attempting to interface with the da
 Some normal input errors include:
 
 - Invalid time formats
+
 ![Invalid time format](https://i.imgur.com/9x90eNO.png)
 
 - Malformed or invalid query expressions
-![Invalid query property](https://i.imgur.com/f92MuiK.png) ![Malformed expression](https://i.imgur.com/byS5Wza.png)
+
+![Invalid query property](https://i.imgur.com/f92MuiK.png)
+
+![Malformed expression](https://i.imgur.com/byS5Wza.png)
 
 - Failure to find/delete an event
+
 ![Missing event](https://i.imgur.com/QBatu93.png)
