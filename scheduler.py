@@ -46,7 +46,11 @@ async def _read_one(q: dict = None):
     return await utils.event_embed(event, creator, "Existing Event")
 
 async def _query(q: dict):
-    cursor = db.events.find(q)
+    #Aggregation pipeline commands
+    pipeline = [{"$match": q}]
+    pipeline.append({"$sort": {"start": 1}})    #Always sort on start date, ascending
+
+    cursor = db.events.aggregate(pipeline)
     if not cursor:
         return await utils.err_embed("Could not find events")
 
