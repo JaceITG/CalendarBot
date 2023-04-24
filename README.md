@@ -10,7 +10,7 @@ Using a text channel in a Discord server where CalendarBot is enabled, we can re
 
 ![Create command](https://i.imgur.com/xjNeAJQ.png)
 
-This will convey a Create request to the scheduler (`await scheduler.request('create', [name, sdt, edt, ctx.author])`) which initializes a new user account and event document in the calendar database.
+This will convey a Create request to the [scheduler](scheduler.py#L83) (`await scheduler.request('create', [name, sdt, edt, ctx.author])`) which initializes a new user account and event document in the calendar database.
 
 ![Database entry](https://i.imgur.com/WLFZxq0.png)
 
@@ -32,7 +32,7 @@ Let's conduct a simple search for the event we just created in the previous stag
 
 ![/get name: GH201 Final](https://i.imgur.com/uYcR1xA.png)
 
-Using queries with the `/get` command allows for more advanced filtering and aggregation of events. For example, querying all events with "final in name" will return a list of all final exams we have stored in the database.
+Using queries with the `/get` command allows for more advanced filtering and aggregation of events. For example, querying all events with "final in name" will return a list of all final exams we have stored in the database, [automatically sorted](scheduler.py#L51) in chronological order.
 
 ![Final exams](https://i.imgur.com/Up42xR8.png)
 
@@ -55,7 +55,7 @@ Now if we search the database for the "Homework" event, we see that it no longer
 
 ### Common errors
 
-Errors in user input may commonly arise when attempting to interface with the database. For this reason, exceptions are caught and the [error embed utility](utils.py) returns a readable notice of the error to the user.
+Errors in user input may commonly arise when attempting to interface with the database. For this reason, exceptions are caught and the [error embed utility](utils.py#L123) returns a readable notice of the error to the user.
 
 Some normal input errors include:
 
