@@ -91,7 +91,7 @@ async def strtoqry(q):
                 #Separate operands
                 tokens = [token.strip() for token in t.split(o)]
 
-                if len(tokens) != 2:
+                if len(tokens) != 2 or len(tokens[0])==0 or len(tokens[1])==0:
                     return await err_embed(f"Malformed operator expression: {t}")
                 
                 #Determine whether left or right operand is the property specifier
