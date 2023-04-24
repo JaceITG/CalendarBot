@@ -8,4 +8,4 @@ Discord Event Planner and Calendar Bot
 
 Using a text channel in a Discord server where CalendarBot is enabled, we can register an account and create our first event using the slash command `/create` with arguments for the event's name, start time, and end time.
 
-!("https://imgur.com/xjNeAJQ")
+(https://imgur.com/xjNeAJQ)
