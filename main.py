@@ -115,7 +115,11 @@ async def findevent(ctx: interactions.CommandContext, id: str = None, name: str 
         embed = await scheduler.request('query', doc={"name": name})
     elif query:
         doc = await utils.strtoqry(query)
-        embed = await scheduler.request('query', doc = doc)
+        if type(doc) == interactions.api.models.message.Embed:
+            #Catch error embed resulting from query parsing
+            embed = doc
+        else:
+            embed = await scheduler.request('query', doc = doc)
     else:
         embed = await scheduler.request('query', doc={})
     await ctx.send(embeds=embed)
