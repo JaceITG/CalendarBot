@@ -81,8 +81,6 @@ async def request(action, args: list = None, doc: dict = None):
         return await _create(*args)
     elif action == 'read':
         return await _read_one(doc)
-    elif action == 'update':
-        return None
     elif action == 'delete':
         return await _delete(doc)
     elif action == 'read_user':

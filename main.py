@@ -2,15 +2,16 @@ import json
 import scheduler
 
 import utils
-
 import interactions
-import interactions.api.models as models
 
+#Obtain login token from hidden file
 with open('.secret', 'r') as f:
     token = json.loads(f.read())['token']
 
+#Init bot
 bot = interactions.Client(token=token)
 
+#API Connectivity Test Command
 @bot.command(
         name="ping",
         description="test",
@@ -18,6 +19,11 @@ bot = interactions.Client(token=token)
 async def ping(ctx: interactions.CommandContext):
     await ctx.send("pong")
 
+### Command: create ###
+# Usage: /create event_name start_time [end_time]
+#
+# Creates an event in the calendar
+#####
 @bot.command(
         name="create",
         description="Create a new event object in the calendar",
@@ -54,6 +60,13 @@ async def newevent(ctx: interactions.CommandContext, name: str, start: str, end:
     event_embed = await scheduler.request('create', [name, sdt, edt, ctx.author])
     await ctx.send(embeds=event_embed)
 
+### Command: get ###
+# Usage: /get [id|name|creator=search] [query=expression]
+#
+# Retreive event(s) in the calendar matching an ID, name, or creator value, or
+# run an advanced query expression on the follwing properties:
+# _id, name, start, end, author_id, author_name, created
+#####
 @bot.command(
         name="get",
         description="Get an existing event object in the calendar",
@@ -87,6 +100,7 @@ async def newevent(ctx: interactions.CommandContext, name: str, start: str, end:
 )
 async def findevent(ctx: interactions.CommandContext, id: str = None, name: str = None, creator: str = None, query: str = None):
     if creator:
+        #Resolve Discord user/id
         res = await ctx.guild.search_members(creator)
         if len(res)<1:
             err = await utils.err_embed(f"Could not find user {creator}")
@@ -106,6 +120,11 @@ async def findevent(ctx: interactions.CommandContext, id: str = None, name: str 
         embed = await scheduler.request('query', doc={})
     await ctx.send(embeds=embed)
 
+### Command: delete ###
+# Usage: /delete id|name=value
+#
+# Delete a specific event associated with the user's account from the calendar
+#####
 @bot.command(
         name="delete",
         description="Delete an event from the calendar",

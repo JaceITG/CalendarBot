@@ -10,6 +10,7 @@ async def parse_time(time):
     
     return parse(time)
 
+#Embed representation of event document
 async def event_embed(event:dict, action:str = None):
     colors = {
         'New Event Created': models.misc.Color.GREEN,
@@ -38,6 +39,7 @@ async def event_embed(event:dict, action:str = None):
     emb.set_footer(f"Event ID {event['_id']}")
     return emb
 
+#Embed representation of multiple event documents
 async def query_embed(cursor, q:dict = None):
     emb = models.Embed(title="Results", description=f"Query: `{str(q)}`", color=models.misc.Color.WHITE)
     
@@ -62,6 +64,7 @@ async def query_embed(cursor, q:dict = None):
     
     return emb
 
+#Format a string expression into a query document
 async def strtoqry(q):
     doc = {}
 
@@ -85,11 +88,13 @@ async def strtoqry(q):
     for t in terms:
         for o in operators.keys():
             if o in t:
+                #Separate operands
                 tokens = [token.strip() for token in t.split(o)]
 
                 if len(tokens) != 2:
                     return await err_embed(f"Malformed operator expression: {t}")
                 
+                #Determine whether left or right operand is the property specifier
                 if tokens[0] in fields:
                     prop = tokens[0]
                     value = tokens[1]
